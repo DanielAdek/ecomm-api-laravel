@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Category;
 
@@ -32,5 +33,12 @@ class CategoryService
     $category->update($data);
 
     return $category->fresh();
+  }
+
+  public function delete(Category $category): void
+  {
+      DB::transaction(function () use ($category) {
+          $category->delete();
+      });
   }
 } 
