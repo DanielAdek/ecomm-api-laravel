@@ -8,17 +8,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
+use App\Services\CategoryService;
 
 class CategoryController extends Controller
 {
+    public function __construct(
+       private CategoryService $service
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return CategoryResource::collection(
+        $data = CategoryResource::collection(
             Category::latest()->get()
         );
+
+        return [
+            'message' => 'Successful!',
+            'data' => $data
+        ];
     }
 
     /**
@@ -26,7 +36,7 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create(
+        $category = $this->service->create(
             $request->validated()
         );
 
