@@ -10,83 +10,87 @@ use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Traits\ApiResponse;
 
 class CategoryController extends Controller
 {
-    public function __construct(
-       private CategoryService $service
-    ) {}
+	use ApiResponse;
+	public function __construct(
+			private CategoryService $service
+	) {}
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $data = CategoryResource::collection(
-            Category::latest()->get()
-        );
+	/**
+	 * Display a listing of the resource.
+	 */
+	public function index()
+	{
+			$data = CategoryResource::collection(
+					Category::latest()->get()
+			);
 
-        return [
-            'message' => 'Successful!',
-            'data' => $data
-        ];
-    }
+		return $this->successResponse(
+			$data,
+			'Categories retrieved successfully'
+		);
+	}
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCategoryRequest $request)
-    {
-        $category = $this->service->create(
-            $request->validated()
-        );
+	/**
+	 * Store a newly created resource in storage.
+	 */
+	public function store(StoreCategoryRequest $request)
+	{
+		$category = $this->service->create(
+				$request->validated()
+		);
 
-        return response()->json([
-            'message' => 'Category created successfully',
-            'date' => $category,
-        ], 201);
-    }
+		return $this->successResponse(
+			new CategoryResource($category),
+			'Category created successfully',
+			201
+    );
+	}
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Category $category)
-    {
-        $category = new CategoryResource(
-            $this->service->getById($category)
-        );
+	/**
+	 * Display the specified resource.
+	 */
+	public function show(Category $category)
+	{
+		$category = new CategoryResource(
+				$this->service->getById($category)
+		);
 
-        return response()->json([
-            'message' => "Success",
-            'data' => $category
-        ]);
-    }
+		return $this->successResponse(
+			new CategoryResource($category),
+			'Category retrieved successfully'
+    );
+	}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCategoryRequest $request, Category $category)
-    {
-        $updatedCategory = $this->service->update(
-          $category,
-          $request->validated()
-        );
+	/**
+	 * Update the specified resource in storage.
+	 */
+	public function update(UpdateCategoryRequest $request, Category $category)
+	{
+		$updatedCategory = $this->service->update(
+			$category,
+			$request->validated()
+		);
 
-        return response()->json([
-          'message' => 'Category updated successfully',
-          'data' => new CategoryResource($updatedCategory),
-        ]);
-    }
+		return $this->successResponse(
+			new CategoryResource($updatedCategory),
+			'Updated Successfully!'
+		);
+	}
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
-    {
-      $this->service->delete($category);
+	/**
+	 * Remove the specified resource from storage.
+	 */
+	public function destroy(Category $category)
+	{
+		$this->service->delete($category);
 
-			return response()->json([
-					'message' => 'Category deleted successfully',
-			]);
-    }
+		return $this->successResponse(
+      null,
+      'Category deleted successfully'
+    );
+	}
 }
