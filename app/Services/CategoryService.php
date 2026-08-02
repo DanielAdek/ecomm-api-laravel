@@ -16,7 +16,12 @@ class CategoryService
   public function create(array $data): Category
   {
     $data['slug'] = Str::slug($data['name']);
-    
+
     return Category::create($data);
+  }
+
+  public function getById(Category $category)
+  {
+    return $category;
   }
 } 
