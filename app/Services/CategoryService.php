@@ -24,4 +24,13 @@ class CategoryService
   {
     return $category;
   }
+
+  public function update(Category $category, array $data)
+  {
+    $data['slug'] = Str::slug($data['name']);
+
+    $category->update($data);
+
+    return $category->fresh();
+  }
 } 

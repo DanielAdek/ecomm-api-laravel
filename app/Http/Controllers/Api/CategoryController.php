@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -64,9 +65,17 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $updatedCategory = $this->service->update(
+          $category,
+          $request->validated()
+        );
+
+        return response()->json([
+          'message' => 'Category updated successfully',
+          'data' => new CategoryResource($updatedCategory),
+        ]);
     }
 
     /**
